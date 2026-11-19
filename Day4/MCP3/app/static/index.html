@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Loan KYC Graph RAG</title>
+<script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1c2430;--mut:#667085;--bd:#e3e6eb;--ac:#2f5bea;--ok:#0f9d58;--warn:#e69500;--bad:#d93025;--code:#0f172a;--codetx:#d6e2ff}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1218;--card:#161b24;--tx:#e6e9ef;--mut:#93a0b4;--bd:#273040;--ac:#6c8cff;--code:#0a0d12}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 system-ui,Segoe UI,sans-serif}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--bd);background:var(--card)}
+h1{font-size:16px;margin:0 12px 0 0}select,input,button{font:inherit;padding:7px 10px;border:1px solid var(--bd);border-radius:6px;background:var(--card);color:var(--tx)}
+button{background:var(--ac);color:#fff;border:0;cursor:pointer}button:disabled{opacity:.5}
+main{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;padding:12px 16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;min-width:0}
+.card h2{font-size:13px;margin:0 0 8px;display:flex;justify-content:space-between;gap:8px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
+.badge{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--bd);color:var(--tx);text-transform:none;letter-spacing:0}
+.badge.run{background:var(--warn);color:#fff}.badge.done{background:var(--ok);color:#fff}
+pre{margin:0;background:var(--code);color:var(--codetx);padding:8px;border-radius:6px;overflow:auto;max-height:220px;font-size:12px;white-space:pre-wrap;word-break:break-word}
+.ev{margin-bottom:8px}.ev b{font-size:12px}
+#graph{height:360px;border:1px solid var(--bd);border-radius:6px}
+.steps{display:flex;flex-wrap:wrap;gap:6px}.step{padding:4px 10px;border-radius:99px;border:1px solid var(--bd);font-size:12px;color:var(--mut)}
+.step.on{border-color:var(--warn);color:var(--warn)}.step.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.wide{grid-column:1/-1}
+.decision{font-size:20px;font-weight:700}.AUTO_APPROVE{color:var(--ok)}.MANUAL_REVIEW{color:var(--warn)}.REJECT_COMPLIANCE,.REJECT{color:var(--bad)}
+ul{margin:6px 0 0 18px;padding:0}.err{color:var(--bad);font-weight:600}
+.legend span{display:inline-block;margin-right:10px;font-size:12px}.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px}
+</style></head><body>
+<header>
+  <h1>Loan Processing &amp; KYC Triage · Graph RAG</h1>
+  <select id="app"></select>
+  <input id="key" type="password" placeholder="GROQ_API_KEY (if not in .env)" size="26">
+  <button id="run">Run workflow</button>
+  <span id="model" style="color:var(--mut)"></span>
+</header>
+<main>
+  <section class="card wide"><h2>LangGraph pipeline</h2><div class="steps" id="steps"></div></section>
+  <section class="card"><h2>Plugin · PyPDFLoader <span class="badge" id="b-plugin">idle</span></h2><div id="plugin"></div></section>
+  <section class="card"><h2>MCP server · sqlite <span class="badge" id="b-mcp">idle</span></h2><div id="mcp"></div></section>
+  <section class="card wide"><h2>Retrieved knowledge subgraph <span class="badge" id="b-graph">idle</span></h2>
+    <div class="legend" id="legend"></div><div id="graph"></div><div id="signals" style="margin-top:8px"></div></section>
+  <section class="card"><h2>LLM · gpt-oss-120b (Groq) <span class="badge" id="b-llm">idle</span></h2><div id="llm"></div></section>
+  <section class="card"><h2>Decision</h2><div id="decision" style="color:var(--mut)">Run a workflow to see the decision.</div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id), esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const STEPS=[["extract_docs","1 Extract KYC PDF (plugin)"],["fetch_via_mcp","2 Fetch records (MCP)"],["build_graph","3 Build graph"],["graph_retrieve","4 Graph retrieve"],["kyc_triage","5 LLM triage"],["route","6 Route → underwrite / review / reject"]];
+const COL={Customer:"#2f5bea",Address:"#8e44ad",Phone:"#16a085",Employer:"#e67e22",Account:"#7f8c8d",Application:"#0f9d58",Watchlist:"#d93025"};
+$("legend").innerHTML=Object.entries(COL).map(([k,c])=>`<span><i style="background:${c}"></i>${k}</span>`).join("");
+const badge=(id,t,c)=>{const e=$(id);e.textContent=t;e.className="badge "+(c||"")};
+function resetUI(){
+  $("steps").innerHTML=STEPS.map(([k,l])=>`<span class="step" id="s-${k}">${l}</span>`).join("");
+  ["plugin","mcp","llm","signals"].forEach(i=>$(i).innerHTML="");$("graph").innerHTML="";$("decision").innerHTML="";
+  ["b-plugin","b-mcp","b-graph","b-llm"].forEach(i=>badge(i,"idle"));
+}
+function add(id,html){const d=document.createElement("div");d.className="ev";d.innerHTML=html;$(id).appendChild(d)}
+function stepOn(k){const e=$("s-"+k);if(e)e.className="step on"}function stepDone(k){const e=$("s-"+k);if(e)e.className="step done"}
+function drawGraph(g){
+  const nodes=new vis.DataSet(g.nodes.map(n=>({id:n.id,label:n.label,color:COL[n.kind],font:{color:"#fff",size:11},shape:n.center?"box":"dot",size:n.kind==="Customer"?18:12,borderWidth:n.center?4:1,title:n.kind})));
+  const edges=new vis.DataSet(g.edges.map(e=>({from:e.from,to:e.to,label:e.label,font:{size:8,align:"middle"},color:e.label==="MATCHES_WATCHLIST"?"#d93025":undefined,width:e.label==="MATCHES_WATCHLIST"?3:1})));
+  new vis.Network($("graph"),{nodes,edges},{physics:{stabilization:true,barnesHut:{springLength:110}},nodes:{font:{color:getComputedStyle(document.body).color}}});
+}
+function handle(e){
+  switch(e.type){
+  case"plugin_start":stepOn("extract_docs");badge("b-plugin","running","run");add("plugin",`<b>${esc(e.plugin)}</b><br>input: ${esc(e.input)}`);break;
+  case"plugin_end":badge("b-plugin","done","done");add("plugin",`<b>${e.pages} page(s) extracted</b><pre>${esc(e.text)}</pre><b>Parsed fields</b><pre>${esc(JSON.stringify(e.fields,null,1))}</pre>`);break;
+  case"mcp_server":stepOn("fetch_via_mcp");badge("b-mcp","running","run");add("mcp",`<b>Connected:</b> ${esc(e.server)}<br>tools: ${e.tools.map(esc).join(", ")}`);break;
+  case"mcp_call":add("mcp",`<b>→ call_tool ${esc(e.tool)}</b><pre>${esc(JSON.stringify(e.args))}</pre>`);break;
+  case"mcp_result":add("mcp",`<b>← ${esc(e.table)}: ${e.count} rows</b><pre>${esc(e.preview)}…</pre>`);break;
+  case"graph_built":stepOn("build_graph");badge("b-graph","building","run");break;
+  case"graph_subgraph":badge("b-graph",e.nodes.length+" nodes","done");drawGraph(e);
+    $("signals").innerHTML="<b>Graph-derived signals</b><pre>"+esc(JSON.stringify(e.signals,null,1))+"</pre>";break;
+  case"llm_start":stepOn("kyc_triage");badge("b-llm","running","run");add("llm",`<b>${esc(e.step)}</b> → ${esc(e.model)}…`);break;
+  case"node_info":add("llm",`<b>Underwriting</b><pre>${esc(JSON.stringify(e.data,null,1))}</pre>`);break;
+  case"llm_end":badge("b-llm","done","done");add("llm",`<b>${esc(e.step)} output</b><pre>${esc(JSON.stringify(e.output,null,1))}</pre>`);break;
+  case"node_done":stepDone(e.node);if(e.node==="kyc_triage"){stepOn("route");stepDone("route")}
+    if(e.node==="graph_retrieve")stepDone("build_graph");break;
+  case"final":$("decision").innerHTML=`<div class="decision ${e.decision}">${esc(e.decision)}</div>${e.queue?`<div>Queue: ${esc(e.queue)}</div>`:""}<ul>${(e.reasons||[]).map(r=>`<li>${esc(r)}</li>`).join("")}</ul><p>${esc(e.narrative||"")}</p>`;break;
+  case"error":$("decision").innerHTML=`<div class="err">${esc(e.message)}</div>`;break;
+  }
+}
+async function init(){
+  const r=await (await fetch("/api/applications")).json();
+  $("app").innerHTML=r.applications.map(a=>`<option value="${a.app_id}">${a.app_id} · ${esc(a.name)} · ₹${a.amount.toLocaleString()} · ${esc(a.purpose)}</option>`).join("");
+  $("model").textContent="model: "+r.model+(r.groq_key_set?" · key loaded":" · no key");
+  resetUI();
+}
+$("run").onclick=async()=>{
+  resetUI();$("run").disabled=true;
+  if($("key").value)await fetch("/api/key",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:$("key").value})});
+  const es=new EventSource("/api/run/"+$("app").value);
+  es.onmessage=m=>{const e=JSON.parse(m.data);if(e.type==="done"){es.close();$("run").disabled=false;return}handle(e)};
+  es.onerror=()=>{es.close();$("run").disabled=false};
+};
+init();
+</script></body></html>

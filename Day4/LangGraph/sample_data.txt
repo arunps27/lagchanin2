@@ -1,0 +1,19 @@
+Acme Robotics Company Handbook (Sample)
+
+About the Company
+Acme Robotics was founded in 2015 by Dana Whitfield and Raj Patel in Austin, Texas. The company builds warehouse automation robots. As of 2025, Acme has 420 employees across offices in Austin, Rotterdam, and Singapore.
+
+Products
+The flagship product is the PickBot 3000, an autonomous picking robot that can lift up to 25 kg and move at 2.5 meters per second. It uses LiDAR and a stereo camera for navigation. The PickBot 3000 battery lasts 10 hours and fully recharges in 90 minutes. The smaller model, the SortBot Mini, handles parcels up to 5 kg and costs $12,000 per unit, while the PickBot 3000 costs $48,000 per unit.
+
+Leave Policy
+Full-time employees receive 25 days of paid vacation per year plus 10 public holidays. Unused vacation days can be carried over up to a maximum of 5 days into the next year. Parental leave is 16 weeks fully paid for all parents. Sick leave is unlimited but requires a doctor's note after 3 consecutive days.
+
+Remote Work
+Employees may work remotely up to 3 days per week. Fully remote arrangements require approval from a director. Every employee receives a $500 home-office stipend once, at the time of hire, and a $50 monthly internet allowance.
+
+Support
+Customers can reach support 24/7 at support@acme-robotics.example or by phone at +1-555-0142. Premium support customers get a guaranteed 2-hour response time; standard customers get a 24-hour response time. The warranty on all robots is 2 years, extendable to 5 years for an extra 8% of the purchase price.
+
+Security
+All employees must use two-factor authentication. Passwords must be at least 14 characters. Security incidents must be reported to the security team within 1 hour of discovery.

@@ -1,0 +1,30 @@
+Acme Cloud Services - Company Handbook (Sample)
+
+1. About the Company
+Acme Cloud Services was founded in 2015 in Austin, Texas by Maria Lopez and David Chen. The company provides cloud hosting, managed databases, and DevOps consulting to mid-sized businesses. As of 2025, Acme has 240 employees across offices in Austin, London, and Singapore.
+
+2. Products
+- AcmeHost: virtual machine hosting with 99.95% uptime SLA. Plans start at $20 per month.
+- AcmeDB: managed PostgreSQL and MySQL databases with automatic daily backups retained for 14 days.
+- AcmeDeploy: a CI/CD platform that integrates with GitHub and GitLab.
+
+3. Support Policy
+Support is available 24/7 via chat and email. Priority customers receive a phone line with a guaranteed 15-minute response time. Standard tickets are answered within 4 business hours. Refunds are available within 30 days of purchase for annual plans.
+
+4. Leave and Benefits
+Full-time employees receive 25 days of paid vacation per year and 10 days of sick leave. Parental leave is 16 weeks fully paid. Employees get a $1,000 annual learning budget and may work remotely up to 3 days per week.
+
+5. Security Practices
+All customer data is encrypted at rest with AES-256 and in transit with TLS 1.3. Acme is SOC 2 Type II certified and completes a third-party penetration test every year. Security incidents must be reported to security@acme.example within 1 hour of discovery.
+
+6. Roadmap for 2026
+- Q1: Launch AcmeDB support for MongoDB.
+- Q2: Open a new data center in Frankfurt.
+- Q3: Release AcmeDeploy 2.0 with built-in secret management.
+- Q4: Introduce usage-based pricing for AcmeHost.
+
+Sample questions to try:
+- Who founded Acme Cloud Services and where?
+- How many vacation days do employees get?
+- What is the uptime SLA for AcmeHost?
+- When will the Frankfurt data center open?

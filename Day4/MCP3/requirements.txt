@@ -1,0 +1,13 @@
+langchain
+langgraph
+langchain-groq
+langchain-community
+langchain-mcp-adapters
+mcp
+mcp-server-sqlite
+pypdf
+networkx
+fastapi
+uvicorn
+reportlab
+python-dotenv
