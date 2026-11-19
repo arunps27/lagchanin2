@@ -1,0 +1,49 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 848 >>
+stream
+BT /F1 12 Tf 50 780 Td 16 TL
+(Employee Onboarding Handbook) '
+() '
+(1. Laptop and equipment. New hires receive a managed laptop on day one.) '
+(Devices must be returned within 10 business days of leaving the company.) '
+() '
+(2. Mandatory training. All employees must complete the security awareness) '
+(course within 14 days of joining. The course is renewed every 12 months.) '
+() '
+(3. Probation period. The probation period lasts 90 days, with a review) '
+(meeting at day 45 and a final review at day 90 with the line manager.) '
+() '
+(4. Working hours. Core hours are 10:00 to 16:00 local time. Employees) '
+(may work remotely up to 3 days per week with manager approval.) '
+() '
+(5. Mentorship. Each new hire is paired with a buddy for the first 60 days.) '
+(Buddies meet the new hire weekly to answer questions about tools and process.) '
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000001140 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1210
+%%EOF

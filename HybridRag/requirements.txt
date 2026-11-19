@@ -1,0 +1,9 @@
+sentence-transformers
+torch
+rank_bm25
+chromadb
+openai
+streamlit
+python-dotenv
+numpy
+pypdf

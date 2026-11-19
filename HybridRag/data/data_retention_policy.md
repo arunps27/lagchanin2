@@ -1,0 +1,2 @@
+# Data Retention Policy
+Customer transaction records are retained for 7 years to satisfy financial audit requirements, after which they are securely deleted. Application logs are kept for 90 days in hot storage and archived for 1 year in cold storage. Backups are encrypted with AES-256 and retained for 35 days. Employee records are retained for 6 years after termination. Data subject deletion requests under GDPR must be fulfilled within 30 days, unless legal hold applies. The Data Protection Officer approves any exception to these retention periods.
